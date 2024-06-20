@@ -49,6 +49,7 @@ $(EE_BIN_PKD): $(EE_BIN)
 	@$(EE_STRIP) --remove-section=.comment $(EE_BIN)
 	ps2-packer $< $@
 
+vpath %.irx iop/__precomp/base/
 vpath %.irx iop/__precomp/debug/
 IRXTAG = $(notdir $(addsuffix _irx, $(basename $<)))
 
