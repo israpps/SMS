@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "sms_iop.h": "c"
+        "*.make": "makefile",
+        "sms_iop.h": "c",
+        "sms.h": "c",
+        "sms_pad.h": "c"
     }
 }

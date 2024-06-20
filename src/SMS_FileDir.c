@@ -216,7 +216,7 @@ int SMS_FileID ( const char* apName ) {
 }  /* end SMS_FileID */
 
 void SMS_FileDirInit ( char* apPath ) {
-
+DPRINTF("%s()\n", __FUNCTION__);
  int           lFD;
  int           lfSort = g_Config.m_BrowserFlags & SMS_BF_SORT;
  SMS_List*     lpDirList;
@@ -227,8 +227,8 @@ void SMS_FileDirInit ( char* apPath ) {
  char*         lpPtr;
  SMS_ListNode* lpNode;
 
- if (  g_CMedia == 0 && ( g_IOPFlags & SMS_IOPF_UMS )  ) g_pUSB[ 3 ] = g_CUnit + '0';
-
+ if (  g_CMedia == 0 && ( g_IOPFlags & SMS_IOPF_UMS )  ) g_pUSB[ 4 ] = g_CUnit + '0';
+ DPRINTF("g_pUSB = %s\n", g_pUSB);
  GUI_Status ( STR_READING_MEDIA.m_pStr );
 
  if ( !g_pFileList )
@@ -239,7 +239,7 @@ void SMS_FileDirInit ( char* apPath ) {
 
   strcpy ( g_CWD, g_pDevName[ g_CMedia ] );
 
-  *( unsigned int* )&g_CWD[ 4 ] = 0x0000003A;
+  *( unsigned int* )&g_CWD[ (g_CMedia==0) ? 5 : 4 ] = ':';//0x0000003A;
 
   if ( g_CMedia == 2 ) {
 

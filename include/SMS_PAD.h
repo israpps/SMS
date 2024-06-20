@@ -12,10 +12,68 @@
 #ifndef __SMS_PAD_H
 #define __SMS_PAD_H
 
+#include <libpad.h>
+int ReadCombinedPadStatus(void);
+int ReadPadStatus(int port, int slot);
+int ReadPadStatus_raw(int port, int slot);
+int ReadCombinedPadStatus_raw(void);
+void PadDeinitPads(void);
+void PadInitPads(void);
+#define SMS_PadButtonStatus padButtonStatus
+#define PAD_Init() PadInitPads()
+#define PAD_Quit() PadDeinitPads()
+
+#define PAD_OpenPort(a,b,c) //padPortOpen(a,b,c)
+#define PAD_ClosePort(a,b) //padPortClose(a,b)
+
+#define PAD_ReqState padGetReqState
+#define PAD_SetReqState padSetReqState
+#define PAD_State padGetState
+#define PAD_Read ReadPadStatus_raw
+#define PAD_SetMainMode padSetMainMode
+
+
+#define SMS_PAD_LEFT PAD_LEFT
+#define SMS_PAD_DOWN PAD_DOWN
+#define SMS_PAD_RIGHT PAD_RIGHT
+#define SMS_PAD_UP PAD_UP
+#define SMS_PAD_START PAD_START
+#define SMS_PAD_R3 PAD_R3
+#define SMS_PAD_L3 PAD_L3
+#define SMS_PAD_SELECT PAD_SELECT
+#define SMS_PAD_SQUARE PAD_SQUARE
+#define SMS_PAD_CROSS PAD_CROSS
+#define SMS_PAD_CIRCLE PAD_CIRCLE
+#define SMS_PAD_TRIANGLE PAD_TRIANGLE
+#define SMS_PAD_R1 PAD_R1
+#define SMS_PAD_L1 PAD_L1
+#define SMS_PAD_R2 PAD_R2
+#define SMS_PAD_L2 PAD_L2
+
+
+#define SMS_PAD_STATE_DISCONN  PAD_STATE_DISCONN 
+#define SMS_PAD_STATE_FINDPAD  PAD_STATE_FINDPAD 
+#define SMS_PAD_STATE_FINDCTP1 PAD_STATE_FINDCTP1
+#define SMS_PAD_STATE_EXECCMD  PAD_STATE_EXECCMD 
+#define SMS_PAD_STATE_STABLE   PAD_STATE_STABLE  
+#define SMS_PAD_STATE_ERROR    PAD_STATE_ERROR   
+
+#define SMS_PAD_RSTAT_COMPLETE PAD_RSTAT_COMPLETE
+#define SMS_PAD_RSTAT_FAILED   PAD_RSTAT_FAILED  
+#define SMS_PAD_RSTAT_BUSY     PAD_RSTAT_BUSY    
+
+#define SMS_PAD_MMODE_DIGITAL   PAD_MMODE_DIGITAL  
+#define SMS_PAD_MMODE_DUALSHOCK PAD_MMODE_DUALSHOCK
+
+#define SMS_PAD_MMODE_UNLOCK PAD_MMODE_UNLOCK
+#define SMS_PAD_MMODE_LOCK   PAD_MMODE_LOCK  
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif  /* __cplusplus */
 
+#if 0
 #define SMS_PAD_LEFT      0x0080
 #define SMS_PAD_DOWN      0x0040
 #define SMS_PAD_RIGHT     0x0020
@@ -74,7 +132,6 @@ typedef struct SMS_PadButtonStatus {
  unsigned char  m_Unkn16[ 12 ];
 
 } SMS_PadButtonStatus;
-
 int PAD_Init ( void );
 int PAD_Quit ( void );
 
@@ -89,5 +146,6 @@ int            PAD_SetMainMode ( int, int, int, int );
 
 #ifdef __cplusplus
 }
+#endif
 #endif  /* __cplusplus */
 #endif  /* __SMS_PAD_H */

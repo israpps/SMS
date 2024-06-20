@@ -33,7 +33,7 @@ DISABLE_EXTRA_TIMERS_FUNCTIONS();
 #endif
 
 int main ( int argc, char** argv ) {
-
+ GS_BGCOLOUR(BGR_PURPLE);
  if ( argc > 0 && argv[ 0 ][ 0 ] == 'm' && argv[ 0 ][ 1 ] == 'c' ) {
 
   char lSlot = argv[ 0 ][ 2 ];
@@ -50,28 +50,42 @@ int main ( int argc, char** argv ) {
  }  /* end if */
 
  SMS_IOPReset ( 0 );
+ GS_BGCOLOUR(BGR_YELLOW);
  SMS_EEInit   ();
+ GS_BGCOLOUR(BGR_BLUE);
  CDVD_Init    ();
+ GS_BGCOLOUR(BGR_GREEN);
  CDDA_Init    ();
 
+ GS_BGCOLOUR(BGR_WHITE);
  GUI_Initialize ( 1 );
+ GS_BGCOLOUR(BGR_BLACK);
  SMS_PgIndStart ();
  GUI_Status ( STR_INITIALIZING_SMS.m_pStr );
 #ifndef EMBEDDED
  if ( g_Config.m_BrowserFlags & SMS_BF_UXH ) SMS_OSInit ( argv[ 0 ] );
 #endif  /* EMBEDDED */
+ DPRINTF("SMS_IOPInit()\n");
  SMS_IOPInit     ();
+ DPRINTF("SMS_EEPort2Init()\n");
  SMS_EEPort2Init ();
+ DPRINTF("CDVD_SetSpeed()\n");
  CDVD_SetSpeed   ();
 
  if (  CDDA_DiskType () != DiskType_None  ) CDVD_Stop ();
 
+ DPRINTF("SMS_LoadXLT()\n");
  SMS_LoadXLT ();
+ DPRINTF("SMS_EEScanDir(g_pMC0SMS, g_pExtMBF, g_Config.m_pMBFList )\n");
  SMS_EEScanDir ( g_pMC0SMS, g_pExtMBF, g_Config.m_pMBFList );
+ DPRINTF("SMS_HistoryLoad()\n");
  SMS_HistoryLoad ();
+ DPRINTF("GUI_DeleteObject(g_pVerStr)\n");
  GUI_DeleteObject ( g_pVerStr );
+ DPRINTF("SMS_PgIndStop()\n");
  SMS_PgIndStop ();
 
+ DPRINTF("GUI_Run()\n");
  GUI_Run ();
 
  return 0;

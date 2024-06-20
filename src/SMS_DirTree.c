@@ -65,7 +65,7 @@ SMS_DirTree* SMS_DirTreeInit ( const char* apRoot ) {
 }  /* end SMS_DirTreeInit */
 
 void SMS_DirTreeScan ( SMS_DirTree* apTree, SMS_Dir* apRoot, const char* apPath ) {
-
+DPRINTF("%s(%s)\n", __FUNCTION__,apPath);
  int   lLen;
  char* lpPath;
  int   lDD;

@@ -1,4 +1,4 @@
-
+.SILENT:
 EE_OBJ_DIR = obj/
 EE_INC_DIR = include/
 EE_BIN_DIR = bin/
@@ -9,7 +9,7 @@ EE_BIN_PKD = $(EE_BIN_DIR)SMS.ELF
 
 EE_INCS    = -I$(EE_INC_DIR) -I$(PS2SDK)/ee/include -I$(PS2SDK)/common/include -I$(PS2SDK)/ports/include -I$(PS2SDK)/sbv/include
 EE_LDFLAGS = -L$(PS2SDK)/sbv/lib -L$(PS2SDK)/ee/lib -L$(PS2SDK)/ports/lib -L$(EE_SRC_DIR)/lzma2
-EE_LIBS    = -lpatches -lc -lmc -lkernel -lmf
+EE_LIBS    = -lpatches -lc -lmc -lpadx -lkernel -lmf
 
 EE_OBJS  = main.o SMS_OS.o SMS_GS_0.o SMS_GS_1.o SMS_GS_2.o SMS_Timer.o           \
            SMS_MP123Core.o SMS_FileContext.o  SMS_H263.o                          \
@@ -17,7 +17,7 @@ EE_OBJS  = main.o SMS_OS.o SMS_GS_0.o SMS_GS_1.o SMS_GS_2.o SMS_Timer.o         
            SMS_AAC.o SMS_Utils.o SMS_MP123.o SMS_AC3.o SMS_SPU.o                  \
            SMS_Player.o  SMS_AC3_imdct.o SMS_MSMPEG4.o SMS_Codec.o                \
            SMS_VideoBuffer.o SMS_PlayerControl.o SMS_CDVD.o SMS_CDDA.o            \
-           SMS_EE.o SMS_IOP.o SMS_PAD.o SMS_RC.o SMS_RC_0.o                       \
+           SMS_EE.o SMS_IOP.o SMS_RC.o SMS_RC_0.o                                 \
            SMS_RingBuffer.o SMS_Container.o SMS_ContainerAVI.o SMS_ContainerMP3.o \
            SMS_ContainerM3U.o SMS_List.o SMS_Config.o About.o SMS_Data.o          \
            SMS_GSFont.o About_Data.o SMS_GUIcons.o SMS_ConfigIcon.o SMS_GUI.o     \
@@ -34,7 +34,7 @@ EE_OBJS  = main.o SMS_OS.o SMS_GS_0.o SMS_GS_1.o SMS_GS_2.o SMS_Timer.o         
            SMS_History.o SMS_PgInd.o SMS_VSync.o SMS_GUIClock.o SMS_DateTime.o    \
            SMS_PlayerBallSim.o SMS_SIF.o SMS_ContainerJPG.o SMS_FileMapping.o     \
            SMS_JPEGData.o SMS_JPEG.o SMS_Rescale.o SMS_MPEGInit.o                 \
-           lzma2.o xz_crc32.o xz_dec_lzma2.o xz_dec_stream.o
+           lzma2.o xz_crc32.o xz_dec_lzma2.o xz_dec_stream.o SMS_PAD.o 
            #SMS_MC.o
 
 .PRECIOUS: src2/%.c
@@ -66,36 +66,47 @@ $(EE_BIN_DIR):
 	@$(MKDIR) -p $(EE_BIN_DIR)
 
 $(EE_OBJ_DIR)%.o : $(EE_SRC_DIR)%.c
+	$(info - $<)
 	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_MPEG4.o : $(EE_SRC_DIR)SMS_MPEG4.c $(EE_INC_DIR)SMS_MPEG.h
+	$(info - $<)
 	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_MSMPEG4.o : $(EE_SRC_DIR)SMS_MSMPEG4.c $(EE_INC_DIR)SMS_MPEG.h
+	$(info - $<)
 	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_MPEG.o : $(EE_SRC_DIR)SMS_MPEG.c $(EE_INC_DIR)SMS_MPEG.h
+	$(info - $<)
 	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_H263.o : $(EE_SRC_DIR)SMS_H263.c $(EE_INC_DIR)SMS_MPEG.h
+	$(info - $<)
 	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_GS_1.o : $(EE_SRC_DIR)SMS_GS_1.c
+	$(info - $<)
 	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_GS_2.o : $(EE_SRC_DIR)SMS_GS_2.c
+	$(info - $<)
 	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)%.o : src2/%.c
+	$(info - $<)
 	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)%.o : $(EE_SRC_DIR)%.s
+	$(info - $<)
 	@$(EE_AS) $(EE_ASFLAGS) $< -o $@
 
 $(EE_OBJ_DIR)%.o : $(EE_SRC_DIR)%.S
+	$(info - $<)
 	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_BIN) : $(EE_OBJS) $(PS2SDK)/ee/startup/crt0.o
+	$(info - $<)
 	$(EE_CC) -mno-crt0 -T$(PS2SDK)/ee/startup/linkfile $(EE_LDFLAGS) \
 		     -o $(EE_BIN) $(PS2SDK)/ee/startup/crt0.o $(EE_OBJS) $(EE_LIBS) -Xlinker -Map -Xlinker ./obj/SMS.map
 

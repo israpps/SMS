@@ -125,6 +125,7 @@ static void _load_module ( int anIndex, int afStatus ) {
   s_LoadParams[ anIndex ].m_pBuffer, s_LoadParams[ anIndex ].m_BufSize,
   s_LoadParams[ anIndex ].m_nArgs,   s_LoadParams[ anIndex ].m_pArgs, &lModRes
  );
+ DPRINTF("%s: id %d ret %d\n",s_LoadParams[ anIndex ].m_pName, lRes, lModRes);
 
  if ( anIndex == 1 && lRes >= 0 ) g_IOPFlags |= SMS_IOPF_DEV9_IS;
 
@@ -181,11 +182,9 @@ void SMS_IOPReset ( int afExit ) {
  SifExitRpc     (); 
 
  while(!SifIopReset(s_pUDNL, 0)){};
-
+ while (!SifIopSync()) {;}
  FlushCache(0);
  FlushCache(2);
-
- while (!SifIopSync()) {;}
 
  SifInitRpc ( 0 );
 
@@ -196,17 +195,16 @@ void SMS_IOPReset ( int afExit ) {
 
  //while(!SifIopReset(s_iop_image, 0)){};
 
- FlushCache(0);
- FlushCache(2);
+ //FlushCache(0);
+ //FlushCache(2);
 
- while (!SifIopSync()) {;}
+ //while (!SifIopSync()) {;}
 
- SifInitRpc ( 0 );
- _slib_cur_exp_lib_list.tail = NULL;
- _slib_cur_exp_lib_list.head = NULL;
- sbv_patch_enable_lmb           ();
- sbv_patch_disable_prefix_check ();
-
+ //SifInitRpc ( 0 );
+ //_slib_cur_exp_lib_list.tail = NULL;
+ //_slib_cur_exp_lib_list.head = NULL;
+ //sbv_patch_enable_lmb           ();
+ //sbv_patch_disable_prefix_check ();
  RCX_Load  ();
  RCX_Start ();
  RCX_Open  ();
@@ -229,7 +227,7 @@ void SMS_IOPReset ( int afExit ) {
  REPORT_MODULE(ppctty, i, x); // UART logging for PowerPC
 
  x = SifExecModuleBuffer ( &g_DataBuffer[ SMS_SMSUTILS_OFFSET ], SMS_SMSUTILS_SIZE, 0, NULL, &i );
- REPORT_MODULE(bdm, i, x);
+ REPORT_MODULE(smsutils, i, x);
 
  x = LOADMODULE_BUF ( bdm_irx, 0, NULL, &i );
  REPORT_MODULE(bdm, i, x);
@@ -243,11 +241,14 @@ void SMS_IOPReset ( int afExit ) {
  REPORT_MODULE(mcserv, i, x);
  x = LOADMODULE_BUF ( padman_irx, 0, NULL, &i );
  REPORT_MODULE(padman, i, x);
+
  x = LOADMODULE_BUF ( mx4sio_bd_irx, 0, NULL, &i );
- REPORT_MODULE(mx4sio, i, x);
+ REPORT_MODULE(MX4SIO, i, x);
 
+ SMS_IOPStartUSB(0);
+
+ DPRINTF("Bind SMSUtils RPC\n");
  SIF_BindRPC ( &s_SMSUClt, SMSUTILS_RPC_ID );
-
  DisableIntc(INTC_TIM0);
  DisableIntc(INTC_TIM1);
 
@@ -347,38 +348,18 @@ int SMS_IOPStartUSB ( int afStatus ) {
  sprintf ( lBuf, g_pFmt3, g_pMC0SMS, g_SlashStr, s_pUSBD );
 
  if ( afStatus ) GUI_Status ( STR_LOCATING_USBD.m_pStr );
-
- i = fioOpen ( lBuf, O_RDONLY );
-
- if ( i >= 0 ) {
-  fioClose ( i );
-  i = SifLoadModule ( lBuf, 0, NULL );
- }  /* end if */
-
- if ( i < 0 ) {
   x = LOADMODULE_BUF ( usbd_irx, 0, NULL, &i );
   REPORT_MODULE(usbd, i, x);
-  x = LOADMODULE_BUF ( usbmass_bd_irx, 0, NULL, &i );
-  REPORT_MODULE(usbmass_bd, i, x);
- }
 
  g_IOPFlags |= SMS_IOPF_USB;
 
- lBuf[ strlen ( lBuf ) - 5 ] = 'M';
-
- i = fioOpen ( lBuf, O_RDONLY );
-
- if ( i >= 0 ) {
-  fioClose ( i );
-  i = SifLoadModule ( lBuf, 0, NULL );
- }  /* end if */
-
- if ( i < 0 ) {
-  SifExecDecompModuleBuffer ( &g_DataBuffer[ SMS_USB_MASS_OFFSET ], SMS_USB_MASS_SIZE, 0, NULL, &i );
+  x = LOADMODULE_BUF ( usbmass_bd_irx, 0, NULL, &i );
+  REPORT_MODULE(usbmass_bd, i, x);
   g_IOPFlags |= SMS_IOPF_UMS;
-  *( int* )g_pUSB = 0x20736D75;
- }  /* end if */
-
+  //SifExecDecompModuleBuffer ( &g_DataBuffer[ SMS_USB_MASS_OFFSET ], SMS_USB_MASS_SIZE, 0, NULL, &i );
+  //
+  //*( int* )g_pUSB = 0x20736D75;
+  
  return g_IOPFlags & SMS_IOPF_USB;
 
 }  /* end SMS_IOPStartUSB */
@@ -461,8 +442,9 @@ void SMS_IOPInit ( void ) {
  ee_thread_t lThreadParam;
 
 // look for local copies of LIBSD to allow compatibility with ProtoKernel PS2
- i = SifLoadModule ( s_pLIBSD2, 0, NULL); // mass:LIBSD
- if (i < 0) i = SifLoadModule ( s_pLIBSD3, 0, NULL); // mc0:/SMS/LIBSD
+ //i = SifLoadModule ( s_pLIBSD2, 0, NULL); // mass:LIBSD
+ //if (i < 0) 
+ i = SifLoadModule ( s_pLIBSD3, 0, NULL); // mc0:/SMS/LIBSD
  if (i < 0) i = SifLoadModule ( s_pLIBSD4, 0, NULL); // mc1:/SMS/LIBSD
  if (i < 0) i = SifLoadModule ( s_pLIBSD, 0, NULL); // rom0:LIBSD
 

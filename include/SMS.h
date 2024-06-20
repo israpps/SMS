@@ -19,6 +19,20 @@ typedef unsigned int size_t;
 
 #include <tamtypes.h>
 
+
+#define BGR_PURPLE 0xFF00FF
+#define BGR_YELLOW 0x00FFFF
+#define BGR_BLACK  0x000000
+#define BGR_BLUE   0xFF0000
+#define BGR_GREEN  0x00FF00
+#define BGR_WHITE  0xFFFFFF
+#if 1
+ #define GS_BGCOLOUR(x) *((volatile unsigned long int *)0x120000E0) = x
+#else
+ #define GS_BGCOLOUR(x)
+#endif
+#define DPRINTF(x...) printf(x)
+
 extern unsigned char* g_pSPRTop;
 extern void*          g_pSynthBuffer;
 extern int            g_XShift;

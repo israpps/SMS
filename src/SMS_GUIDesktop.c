@@ -438,7 +438,7 @@ GUIObject* GUI_CreateStatusLine ( void ) {
 }  /* end GUI_CreateStatusLine */
 
 void GUI_Status ( char* apMsg ) {
-
+DPRINTF("%s(%s)\n", __FUNCTION__, apMsg);
  int lLen   = strlen ( apMsg );
  int lWidth = g_GSCtx.m_Width - 96;
  int lDX    = -2;

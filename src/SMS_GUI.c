@@ -241,10 +241,10 @@ static void _smb_handler_connect ( void* apHdr ) {
 }  /* end _smb_handler_connect */
 
 static void _usb_handler_connect ( void* apHdr ) {
-
  int*         lpParam = ( int * )( &(  ( SifCmdHeader_t* )apHdr  ) -> opt );
  int          lUnit   = lpParam[ 1 ];
  unsigned int lCMask, lDMask;
+DPRINTF("%s(%d)\n", __FUNCTION__, lUnit);
 
  switch ( lUnit ) {
   case 0 : lCMask = DEVF_USB_CONNECT_0; lDMask = DEVF_USB_DISCONNECT_0; break;
@@ -356,6 +356,7 @@ void GUI_UpdateStatus ( void ) {
 static int _gui_thread ( void* apParam ) {
 
  static int s_lCntr;
+g_IOPFlags |=  DEVF_USB_CONNECT_0|DEVF_USB_CONNECT_1|DEVF_USB_CONNECT_2;
 
  while ( 1 ) {
 
@@ -645,7 +646,7 @@ void GUI_Initialize ( int afCold ) {
   GSVideoMode   lVideoMode = GSVideoMode_Default;
   ee_sema_t     lSema;
   ee_thread_t   lThread;
-
+  DPRINTF("MC_Init()\n");
   MC_Init ();
 
   lSema.init_count = 0;
@@ -654,21 +655,26 @@ void GUI_Initialize ( int afCold ) {
 
   SMS_TimerInit ();
 
-  PAD_Init ();
+  DPRINTF("PAD_Init()\n");
+  PAD_Init();
+  DPRINTF("PAD_OpenPort()\n");
   PAD_OpenPort ( 0, 0, s_PadBuf0 );
   lSts = SMS_LoadConfig ();
 
   i      = PAD_State ( 0, 0 );
+  DPRINTF("PAD_State(0,0): %d\n", i);
   lTimer = g_Timer;
 
-  while (  i != SMS_PAD_STATE_STABLE && i != SMS_PAD_STATE_FINDCTP1 ) {
+  while (  i != SMS_PAD_STATE_STABLE /*&& i != SMS_PAD_STATE_FINDCTP1 */) {
 
    i = PAD_State ( 0, 0 );
+   DPRINTF("PAD_State(0,0): %d\n", i);
 
    if ( g_Timer - lTimer > 2000 ) break;
 
   }  /* end while */
 
+  DPRINTF("PAD_SetMainMode ( 0, 0, SMS_PAD_MMODE_DIGITAL, SMS_PAD_MMODE_LOCK );\n");
   PAD_SetMainMode ( 0, 0, SMS_PAD_MMODE_DIGITAL, SMS_PAD_MMODE_LOCK );
 
   lTimer = g_Timer;

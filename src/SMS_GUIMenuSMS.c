@@ -1112,12 +1112,9 @@ static int _start_device (  GUIMenu* apMenu, int ( *Start ) ( int )  ) {
  int retVal;
 
  if (   !(  retVal = Start ( 1 )  )   ) {
-
   GUI_Error ( STR_ERROR.m_pStr );
   GUIMenuSMS_UpdateStatus ( apMenu );
-
  } else {
-
   GUI_MenuPopState ( apMenu );
   _device_handler ( apMenu, 0 );
 

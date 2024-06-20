@@ -750,7 +750,7 @@ __asm__(
 );
 
 void SMS_EEScanDir ( const char* apPath, const char* apExt, SMS_List* apList ) {
-
+DPRINTF("%s()\n", __FUNCTION__);
  fio_dirent_t lEntry;
  int          lDD;
 

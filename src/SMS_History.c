@@ -23,7 +23,8 @@ static SMS_List* s_pHst;
 static char s_pHistory[] __attribute__(   (  aligned( 1 ), section( ".data" )  )   ) = "SMS/SMS.hst";
 
 void SMS_HistoryLoad ( void ) {
-
+ int x;
+ DPRINTF("mcOpen(%d, 0, %s)\n", g_MCSlot, s_pHistory);
  int lFD = MC_OpenS ( g_MCSlot, 0, s_pHistory, O_RDONLY );
 
  s_pHst = SMS_ListInit ();
@@ -35,7 +36,9 @@ void SMS_HistoryLoad ( void ) {
   unsigned short lSize;
   SMS_ListNode*  lpNode;
 
-  if (  MC_ReadS ( lFD, &lSize, 2 ) == 2  ) {
+  if (  MC_ReadS ( lFD, &lSize, 2 ) == 0  ) {
+   MC_Sync(x);
+   if (x != 2) break;
    lpNode = SMS_ListPushBackBuf ( s_pHst, lSize + 1 );
    MC_ReadS (  lFD, _STR( lpNode ), lSize  );
    MC_ReadS (  lFD, &lpNode -> m_Param, 8  );
