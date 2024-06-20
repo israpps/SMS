@@ -72,6 +72,9 @@ static char s_pPS2FS  [] __attribute__(   (  section( ".data" ), aligned( 1 )  )
 static char s_pPS2POff[] __attribute__(   (  section( ".data" ), aligned( 1 )  )   ) = "POWEROFF";
 static char s_pUDNL   [] __attribute__(   (  section( ".data" ), aligned( 1 )  )   ) = "rom0:UDNL rom0:EELOADCNF";
 static char s_pLIBSD  [] __attribute__(   (  section( ".data" ), aligned( 1 )  )   ) = "rom0:LIBSD";
+static char s_pLIBSD2  [] __attribute__(   (  section( ".data" ), aligned( 1 )  )   ) = "mass:LIBSD";
+static char s_pLIBSD3  [] __attribute__(   (  section( ".data" ), aligned( 1 )  )   ) = "mc0:/SMS/LIBSD";
+static char s_pLIBSD4  [] __attribute__(   (  section( ".data" ), aligned( 1 )  )   ) = "mc1:/SMS/LIBSD";
 
 struct {
 
@@ -457,7 +460,14 @@ void SMS_IOPInit ( void ) {
  char        lBuff[ 64 ];
  ee_thread_t lThreadParam;
 
- SifLoadModule ( s_pLIBSD, 0, NULL );
+// look for local copies of LIBSD to allow compatibility with ProtoKernel PS2
+ i = SifLoadModule ( s_pLIBSD2, 0, NULL); // mass:LIBSD
+ if (i < 0) i = SifLoadModule ( s_pLIBSD3, 0, NULL); // mc0:/SMS/LIBSD
+ if (i < 0) i = SifLoadModule ( s_pLIBSD4, 0, NULL); // mc1:/SMS/LIBSD
+ if (i < 0) i = SifLoadModule ( s_pLIBSD, 0, NULL); // rom0:LIBSD
+
+
+
 
  SMS_IOPDVDVInit ();
 
