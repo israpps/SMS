@@ -11,79 +11,33 @@
 */
 #ifndef __SMS_MC_H
 #define __SMS_MC_H
+#include <libmc.h>
 
-typedef struct SMS_MCTable {
+// rename all SMS nonsense
+#define MC_Sync(x) mcSync(0, NULL, x)
+#define MC_OpenS mcOpen
+#define MC_SeekS mcSeek
+#define MC_ReadS mcRead
+#define MC_CloseS mcClose
 
- struct {
+#define SMS_MCTable sceMcTblGetDir
 
-  unsigned char  m_Unk0;
-  unsigned char  m_Sec;
-  unsigned char  m_Min;
-  unsigned char  m_Hour;
-  unsigned char  m_Day;
-  unsigned char  m_Month;
-  unsigned short m_Year;
+#define SMS_MCIcon mcIcon
+ #define m_Header head
+ #define m_Title title
+ #define m_Offset nlOffset
+ #define m_Trans trans
+ #define m_ClrBg bgCol
+ #define m_LightDir lightDir
+ #define m_LightCol lightCol
+ #define m_LightAmb lightAmbient
+ #define m_View view
+ #define m_Copy copy
+ #define m_Del  del
 
- } m_Create;
+#define MC_GetInfo mcGetInfo
+#define MC_GetDir mcGetDir
 
- struct {
+#define MC_Init(x...) mcInit(MC_TYPE_XMC)
 
-  unsigned char  m_Unk1;
-  unsigned char  m_Sec;
-  unsigned char  m_Min;
-  unsigned char  m_Hour;
-  unsigned char  m_Day;
-  unsigned char  m_Month;
-  unsigned short m_Year;
-
- } m_Modify;
-
- unsigned int   m_FileSize;
- unsigned short m_FileAttr;
- unsigned short m_Unk2;
- unsigned int   m_Unk3[  2 ];
- unsigned char  m_Name[ 32 ];
-
-} SMS_MCTable __attribute__(   (  aligned( 64 )  )   );
-
-typedef struct SMS_MCIcon {
-
-          char  m_Header[ 4 ];
- unsigned short m_Unk0;
- unsigned short m_Offset;
- unsigned       m_Unk1;
- unsigned       m_Trans;
- int            m_ClrBg   [ 4 ][ 4 ];
- float          m_LightDir[ 3 ][ 4 ];
- float          m_LightCol[ 3 ][ 4 ];
- float          m_LightAmb[ 4 ];
- unsigned short m_Title[  34 ];
-          char  m_View [  64 ];
-          char  m_Copy [  64 ];
-          char  m_Del  [  64 ];
- unsigned char  m_Unk2 [ 512 ];
-
-} SMS_MCIcon;
-
-#ifdef __cplusplus
-extern "C" {
-#endif  /* __cplusplus */
-
-int MC_Init    ( void                                               );
-int MC_Sync    ( int*                                               );
-int MC_GetInfo ( int, int, int*, int*, int*                         );
-int MC_GetDir  ( int, int, const char*, unsigned, int, SMS_MCTable* );
-int MC_Open    ( int, int, const char*, int                         );
-int MC_Read    ( int, void*, int                                    );
-int MC_Close   ( int                                                );
-int MC_Seek    ( int, int, int                                      );
-
-int  MC_OpenS  ( int, int, const char*, int );
-int  MC_ReadS  ( int, void*, int            );
-void MC_CloseS ( int                        );
-int  MC_SeekS  ( int, int, int              );
-
-#ifdef __cplusplus
-}
-#endif  /* __cplusplus */
 #endif  /* __SMS_MC_H */
