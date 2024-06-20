@@ -17,7 +17,6 @@
 *.elf
 *.ELF
 *.erl
-*.irx
 *.map
 *.patch
 *.rej

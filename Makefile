@@ -1,4 +1,3 @@
-.SILENT:
 
 EE_OBJ_DIR = obj/
 EE_INC_DIR = include/
@@ -36,10 +35,23 @@ EE_OBJS  = main.o SMS_OS.o SMS_GS_0.o SMS_GS_1.o SMS_GS_2.o SMS_Timer.o         
            SMS_JPEGData.o SMS_JPEG.o SMS_Rescale.o SMS_MPEGInit.o                 \
            lzma2.o xz_crc32.o xz_dec_lzma2.o xz_dec_stream.o
 
+.PRECIOUS: src2/%.c
+IOP_SANE_BINS = bdm_irx.o mcman_irx.o mx4sio_bd_irx.o ppctty_irx.o usbmass_bd_irx.o bdmfs_fatfs_irx.o \
+ mcserv_irx.o padman_irx.o usbd_irx.o sio2man_irx.o
+EE_OBJS += $(IOP_SANE_BINS)
 EE_OBJS := $(EE_OBJS:%=$(EE_OBJ_DIR)%)
 
 all: $(EE_OBJ_DIR) $(EE_BIN_DIR) $(EE_BIN)
 	@$(EE_STRIP) --remove-section=.comment $(EE_BIN)
+
+vpath %.irx iop/__precomp/debug/
+IRXTAG = $(notdir $(addsuffix _irx, $(basename $<)))
+
+#all embedded crap must explicitly say attribute for .data section
+src2/%_irx.c: %.irx
+	$(DIR_GUARD)
+	bin2c $< $@ $(IRXTAG)
+	@sed 's/aligned(16)/aligned(16), section(\"data\")/' -i $@
 
 $(EE_OBJ_DIR):
 	@$(MKDIR) -p $(EE_OBJ_DIR)
@@ -48,31 +60,34 @@ $(EE_BIN_DIR):
 	@$(MKDIR) -p $(EE_BIN_DIR)
 
 $(EE_OBJ_DIR)%.o : $(EE_SRC_DIR)%.c
-	$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
+	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_MPEG4.o : $(EE_SRC_DIR)SMS_MPEG4.c $(EE_INC_DIR)SMS_MPEG.h
-	$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
+	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_MSMPEG4.o : $(EE_SRC_DIR)SMS_MSMPEG4.c $(EE_INC_DIR)SMS_MPEG.h
-	$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
+	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_MPEG.o : $(EE_SRC_DIR)SMS_MPEG.c $(EE_INC_DIR)SMS_MPEG.h
-	$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
+	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_H263.o : $(EE_SRC_DIR)SMS_H263.c $(EE_INC_DIR)SMS_MPEG.h
-	$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
+	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_GS_1.o : $(EE_SRC_DIR)SMS_GS_1.c
-	$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
+	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)SMS_GS_2.o : $(EE_SRC_DIR)SMS_GS_2.c
-	$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
+	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
+
+$(EE_OBJ_DIR)%.o : src2/%.c
+	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_OBJ_DIR)%.o : $(EE_SRC_DIR)%.s
-	$(EE_AS) $(EE_ASFLAGS) $< -o $@
+	@$(EE_AS) $(EE_ASFLAGS) $< -o $@
 
 $(EE_OBJ_DIR)%.o : $(EE_SRC_DIR)%.S
-	$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
+	@$(EE_CC) $(EE_CFLAGS) $(EE_INCS) -c $< -o $@
 
 $(EE_BIN) : $(EE_OBJS) $(PS2SDK)/ee/startup/crt0.o
 	$(EE_CC) -mno-crt0 -T$(PS2SDK)/ee/startup/linkfile $(EE_LDFLAGS) \

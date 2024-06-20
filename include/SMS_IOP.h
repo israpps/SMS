@@ -32,6 +32,9 @@
 #define SMS_SIF_CMD_NETWORK        4
 #define SMS_SIF_CMD_POWEROFF       5
 
+#define EXTERN_IRX(_irx) extern unsigned char _irx[]; extern unsigned int size_##_irx;
+#define LOADMODULE_BUF(_irx, argc, argv, ret) SifExecModuleBuffer ( _irx, size_##_irx, argc, argv, ret )
+#define REPORT_MODULE(name, ret, id) printf("%s: ret %d id %d\n", #name, ret, id)
 extern unsigned int g_IOPFlags;
 
 #ifdef __cplusplus

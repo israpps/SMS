@@ -60,7 +60,7 @@ static int*               s_pFormat           __attribute__(   (                
 static unsigned int       s_LastCmd           __attribute__(   (                 section( ".bss" )  )   );
 
 int MC_Init ( void ) {
-
+#ifdef OLD_SHITTY_MCINIT
  int retVal = 0;
 
  if (  s_Client.server == NULL && SIF_BindRPC ( &s_Client, MC_SERVER )  ) retVal = *( int* )UNCACHED_SEG( s_RecvData );
@@ -68,7 +68,9 @@ int MC_Init ( void ) {
  s_LastCmd = 0;
 
  return retVal;
-
+#else
+mcInit(MC_TYPE_XMC);
+#endif
 }  /* end MC_Init */
 
 int MC_Sync ( int* apRes ) {

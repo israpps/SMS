@@ -28,6 +28,7 @@
 #include "SMS_ioctl.h"
 #include "SMS_Timer.h"
 
+
 #include <kernel.h>
 #include <sifrpc.h>
 #include <iopheap.h>
@@ -152,11 +153,24 @@ int SifExecDecompModuleBuffer(void *ptr, u32 size, u32 arg_len, const char *args
 	return ret;
 }
 
+EXTERN_IRX(ppctty_irx);
+EXTERN_IRX(usbd_irx);
+EXTERN_IRX(bdm_irx);
+EXTERN_IRX(mcman_irx);
+EXTERN_IRX(mx4sio_bd_irx);
+EXTERN_IRX(ppctty_irx);
+EXTERN_IRX(usbmass_bd_irx);
+EXTERN_IRX(bdmfs_fatfs_irx);
+EXTERN_IRX(mcserv_irx);
+EXTERN_IRX(padman_irx);
+EXTERN_IRX(usbd_irx);
+EXTERN_IRX(sio2man_irx);
+
 void SMS_IOPReset ( int afExit ) {
 
  static const char* lpModules[ 4 ] = { s_pSIO2MAN, s_pPADMAN, s_pMCMAN, s_pMCSERV };
 
- int i;
+ int i, x;
 #if NO_DEBUG
  SifInitRpc ( 0 );
  SifExitIopHeap ();
@@ -208,11 +222,26 @@ void SMS_IOPReset ( int afExit ) {
  sbv_patch_disable_prefix_check ();
  sbv_patch_enable_lmb           ();
 
- SifExecModuleBuffer ( &g_DataBuffer[ SMS_SMSUTILS_OFFSET ], SMS_SMSUTILS_SIZE, 0, NULL, &i );
+ x = LOADMODULE_BUF ( ppctty_irx, 0, NULL, &i );
+ REPORT_MODULE(ppctty, i, x); // UART logging for PowerPC
 
- if ( !afExit ) SifExecModuleBuffer ( &g_DataBuffer[ SMS_SIO2MAN_OFFSET ], SMS_SIO2MAN_SIZE,  0, NULL, &i );
+ x = SifExecModuleBuffer ( &g_DataBuffer[ SMS_SMSUTILS_OFFSET ], SMS_SMSUTILS_SIZE, 0, NULL, &i );
+ REPORT_MODULE(bdm, i, x);
 
- for ( i = 1 - afExit; i < 4; ++i ) SifLoadModule ( lpModules[ i ], 0, NULL );
+ x = LOADMODULE_BUF ( bdm_irx, 0, NULL, &i );
+ REPORT_MODULE(bdm, i, x);
+ x = LOADMODULE_BUF ( bdmfs_fatfs_irx, 0, NULL, &i );
+ REPORT_MODULE(bdmfs_fatfs, i, x);
+ x = LOADMODULE_BUF ( sio2man_irx, 0, NULL, &i );
+ REPORT_MODULE(sio2man, i, x);
+ x = LOADMODULE_BUF ( mcman_irx, 0, NULL, &i );
+ REPORT_MODULE(mcman, i, x);
+ x = LOADMODULE_BUF ( mcserv_irx, 0, NULL, &i );
+ REPORT_MODULE(mcserv, i, x);
+ x = LOADMODULE_BUF ( padman_irx, 0, NULL, &i );
+ REPORT_MODULE(padman, i, x);
+ x = LOADMODULE_BUF ( mx4sio_bd_irx, 0, NULL, &i );
+ REPORT_MODULE(mx4sio, i, x);
 
  SIF_BindRPC ( &s_SMSUClt, SMSUTILS_RPC_ID );
 
@@ -309,7 +338,7 @@ int SMS_IOPStartNet ( int afStatus ) {
 
 int SMS_IOPStartUSB ( int afStatus ) {
 
- int  i;
+ int  i, x;
  char lBuf[ 64 ];
 
  sprintf ( lBuf, g_pFmt3, g_pMC0SMS, g_SlashStr, s_pUSBD );
@@ -323,7 +352,12 @@ int SMS_IOPStartUSB ( int afStatus ) {
   i = SifLoadModule ( lBuf, 0, NULL );
  }  /* end if */
 
- if ( i < 0 ) SifExecDecompModuleBuffer ( &g_DataBuffer[ SMS_USBD_OFFSET ], SMS_USBD_SIZE, 0, NULL, &i );
+ if ( i < 0 ) {
+  x = LOADMODULE_BUF ( usbd_irx, 0, NULL, &i );
+  REPORT_MODULE(usbd, i, x);
+  x = LOADMODULE_BUF ( usbmass_bd_irx, 0, NULL, &i );
+  REPORT_MODULE(usbmass_bd, i, x);
+ }
 
  g_IOPFlags |= SMS_IOPF_USB;
 
