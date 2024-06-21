@@ -35,7 +35,7 @@ void SMS_ListPush ( SMS_List* apList, const char* apString ) {
 }  /* end SMS_ListPush */
 
 SMS_ListNode* SMS_ListPushBack ( SMS_List* apList, const char* apString ) {
-DPRINTF("%s()\n", __FUNCTION__);
+//DPRINTF("%s()\n", __FUNCTION__);
  SMS_ListNode* lpNode = ( SMS_ListNode* )calloc (  1, sizeof ( SMS_ListNode ) + strlen ( apString ) + 1  );
 
  strcpy (  _STR( lpNode ) , apString  );
