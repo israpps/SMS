@@ -241,12 +241,11 @@ void SMS_IOPReset ( int afExit ) {
  REPORT_MODULE(mcserv, i, x);
  x = LOADMODULE_BUF ( padman_irx, 0, NULL, &i );
  REPORT_MODULE(padman, i, x);
-
+#ifdef MX4SIO
  x = LOADMODULE_BUF ( mx4sio_bd_irx, 0, NULL, &i );
  REPORT_MODULE(MX4SIO, i, x);
-
+#endif
  SMS_IOPStartUSB(0);
-
  DPRINTF("Bind SMSUtils RPC\n");
  SIF_BindRPC ( &s_SMSUClt, SMSUTILS_RPC_ID );
  DisableIntc(INTC_TIM0);

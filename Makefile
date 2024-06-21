@@ -4,6 +4,8 @@ EE_INC_DIR = include/
 EE_BIN_DIR = bin/
 EE_SRC_DIR = src/
 
+EE_CFLAGS += -DMX4SIO
+
 EE_BIN = $(EE_BIN_DIR)SMS_unpacked.elf
 EE_BIN_PKD = $(EE_BIN_DIR)SMS.ELF
 

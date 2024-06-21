@@ -216,7 +216,7 @@ int SMS_FileID ( const char* apName ) {
 }  /* end SMS_FileID */
 
 void SMS_FileDirInit ( char* apPath ) {
-DPRINTF("%s()\n", __FUNCTION__);
+DPRINTF("%s(%s)\ng_CMedia %d\n", __FUNCTION__, apPath, g_CMedia);
  int           lFD;
  int           lfSort = g_Config.m_BrowserFlags & SMS_BF_SORT;
  SMS_List*     lpDirList;
@@ -231,15 +231,21 @@ DPRINTF("%s()\n", __FUNCTION__);
  DPRINTF("g_pUSB = %s\n", g_pUSB);
  GUI_Status ( STR_READING_MEDIA.m_pStr );
 
- if ( !g_pFileList )
+ if ( !g_pFileList ) {
   g_pFileList = SMS_ListInit ();
- else SMS_ListDestroy ( g_pFileList, 0 );
+ }
+ else {
+  SMS_ListDestroy ( g_pFileList, 0 );
+ }
 
  if ( apPath[ 0 ] == '\x00' ) {
-
+  DPRINTF("apPath[0] is null \n");
   strcpy ( g_CWD, g_pDevName[ g_CMedia ] );
+  DPRINTF("g_CWD '%s'\n", g_CWD);
 
-  *( unsigned int* )&g_CWD[ (g_CMedia==0) ? 5 : 4 ] = ':';//0x0000003A;
+  //*( unsigned int* )&g_CWD[ (g_CMedia==0) ? 5 : 4 ] = ':';//0x0000003A;
+  strcat (g_CWD, ":" );
+  DPRINTF("g_CWD '%s'\n", g_CWD);
 
   if ( g_CMedia == 2 ) {
 
@@ -316,7 +322,7 @@ DPRINTF("%s()\n", __FUNCTION__);
   }  /* end if */
 
  }  /* end if */
-
+ DPRINTF("g_CWD %s\n", g_CWD);
  lpDirList  = SMS_ListInit ();
  lpFileList = SMS_ListInit ();
  lFD        = strlen ( g_CWD ) - 1;
@@ -329,6 +335,7 @@ DPRINTF("%s()\n", __FUNCTION__);
 
  if (  !( apPath[ 0 ] == '.' && apPath[ 1 ] == '\x00' ) && apPath[ 0 ] != '\x01' ) strcat ( g_CWD, apPath );
 
+ DPRINTF("g_CWD %s\n", g_CWD);
  if ( g_CMedia == 1 && g_pCDDACtx ) {
 
   const CDDADirectory* lpDirs  = CDDA_DirectoryList ( g_pCDDACtx );
@@ -336,7 +343,7 @@ DPRINTF("%s()\n", __FUNCTION__);
 
   if ( !apPath[ 0 ] )
 
-   *( int* )&lPath[ 0 ] = 0x2E;
+   *( int* )&lPath[ 0 ] = '.';//0x2E; 
 
   else if ( apPath[ 0 ] != '\x01' ) strcpy ( lPath, apPath );
 
@@ -439,6 +446,7 @@ DPRINTF("%s()\n", __FUNCTION__);
 
   } else {
 doScan:
+  DPRINTF("fioDopen(%s)\n", g_CWD);
    lFD = fioDopen ( g_CWD );
 
    if ( lFD >= 0 ) {
@@ -521,6 +529,7 @@ doScan:
 
  lpNode = lpFileList -> m_pHead;
 
+  DPRINTF("%s:%d \n", __FUNCTION__, __LINE__);
  while ( lpNode ) {
 
   if ( lpNode -> m_Param == GUICON_AVI ) {

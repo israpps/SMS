@@ -31,6 +31,7 @@ typedef unsigned int size_t;
 #else
  #define GS_BGCOLOUR(x)
 #endif
+#include <stdio.h>
 #define DPRINTF(x...) printf(x)
 
 extern unsigned char* g_pSPRTop;

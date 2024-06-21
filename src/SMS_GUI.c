@@ -356,7 +356,7 @@ void GUI_UpdateStatus ( void ) {
 static int _gui_thread ( void* apParam ) {
 
  static int s_lCntr;
-g_IOPFlags |=  DEVF_USB_CONNECT_0|DEVF_USB_CONNECT_1|DEVF_USB_CONNECT_2;
+ s_DevFlags |=  DEVF_USB_CONNECT_0|DEVF_USB_CONNECT_1|DEVF_USB_CONNECT_2;
 
  while ( 1 ) {
 
@@ -377,28 +377,28 @@ g_IOPFlags |=  DEVF_USB_CONNECT_0|DEVF_USB_CONNECT_1|DEVF_USB_CONNECT_2;
     }  /* end if */
 
    } else if ( s_DevFlags & DEVF_USB_CONNECT_0 ) {
-
+    DPRINTF("DEVF_USB_CONNECT_0\n");
     s_Event    |= (  GUI_MSG_MOUNT_BIT | GUI_MSG_USB | ( 0LL << 56 )  );
     s_DevFlags &= ~DEVF_USB_CONNECT_0;
 
     goto raiseEvent;
 
    } else if ( s_DevFlags & DEVF_USB_CONNECT_1 ) {
-
+    DPRINTF("DEVF_USB_CONNECT_1\n");
     s_Event    |= (  GUI_MSG_MOUNT_BIT | GUI_MSG_USB | ( 1LL << 56 )  );
     s_DevFlags &= ~DEVF_USB_CONNECT_1;
 
     goto raiseEvent;
 
    } else if ( s_DevFlags & DEVF_USB_CONNECT_2 ) {
-
+    DPRINTF("DEVF_USB_CONNECT_2\n");
     s_Event    |= (  GUI_MSG_MOUNT_BIT | GUI_MSG_USB | ( 2LL << 56 )  );
     s_DevFlags &= ~DEVF_USB_CONNECT_2;
 
     goto raiseEvent;
 
    } else if ( s_DevFlags & DEVF_USB_CONNECT_3 ) {
-
+    DPRINTF("DEVF_USB_CONNECT_3\n");
     s_Event    |= (  GUI_MSG_MOUNT_BIT | GUI_MSG_USB | ( 3LL << 56 )  );
     s_DevFlags &= ~DEVF_USB_CONNECT_3;
 
