@@ -446,54 +446,48 @@ DPRINTF("%s(%s)\ng_CMedia %d\n", __FUNCTION__, apPath, g_CMedia);
 
   } else {
 doScan:
-  DPRINTF("fioDopen(%s)\n", g_CWD);
+  DPRINTF("doScan '%s'\n", g_CWD);
    lFD = fioDopen ( g_CWD );
 
    if ( lFD >= 0 ) {
     DPRINTF("Open FD: %d\n", lFD);
     int lIdx = strlen ( g_CWD ) - 1;
 
-    DPRINTF("strcpy ( lPath, g_CWD )\n");
-    strcpy( lPath, g_CWD );
+    DPRINTF("strcpy(lPath, %s)\n", g_CWD);
+    strcpy(lPath, g_CWD);
+    DPRINTF("lPath '%s'\n", lPath);
 
     if ( lPath[ lIdx ] != '\\' && lPath[ lIdx ] != '/' ) {
       DPRINTF("strcat(lPath, g_BSlashStr)\n");
       strcat(lPath, g_BSlashStr);
-    } 
+    }
 
     lpPtr = lPath + strlen ( lPath );
 
-    while (  fioDread ( lFD, &lEntry ) > 0  ) {
-
+    while (fioDread(lFD, &lEntry) > 0) {
+     DPRINTF("  fioDread: '%s' %x\n", lEntry.name, lEntry.stat.mode);
      int lID;
 
-     if ( !lEntry.stat.mode ) {
-
+     if ( !lEntry.stat.mode) {
       strcpy ( lpPtr, lEntry.name );
-
       lID = fioOpen ( lPath, O_RDONLY );
 
       if ( lID >= 0 ) {
-
        fioClose ( lID );
        lEntry.stat.mode = FIO_SO_IFREG;
-
       } else {
-
        lID = fioDopen ( lPath );
 
        if ( lID >= 0 ) {
-
         fioDclose ( lID );
         lEntry.stat.mode = FIO_SO_IFDIR;
-
        } else continue;
-
       }  /* end else */
 
      }  /* end if */
 
-     if ( lEntry.stat.mode & FIO_SO_IFDIR ) {
+     if ( (lEntry.stat.mode & FIO_SO_IFMT) == FIO_SO_IFDIR ) {
+      DPRINTF("    Is dir\n");
 
       if (  !strcmp ( lEntry.name, "."  ) ||
             !strcmp ( lEntry.name, ".." )
@@ -501,18 +495,15 @@ doScan:
 
       lpList = lpDirList;
       lID    = GUICON_FOLDER;
-
-     } else if ( lEntry.stat.mode & FIO_SO_IFREG ) {
-
+     } else 
+       //if ( (lEntry.stat.mode & FIO_SO_IFMT) == FIO_SO_IFREG ) 
+     {
+      DPRINTF("    Is file\n");
       lpList = lpFileList;
       lID    = SMS_FileID ( lEntry.name );
-
-     } else continue;
-
-     SMS_ListPushBack ( lpList, lEntry.name ) -> m_Param = lID;
-
+     }// else continue;
+     SMS_ListPushBack(lpList, lEntry.name)->m_Param = lID;
     }  /* end while */
-
     fioDclose ( lFD );
 
    } else {DPRINTF("dopen Fail: %d\n", lFD);}  /* end if */

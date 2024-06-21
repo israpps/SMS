@@ -162,7 +162,6 @@ EXTERN_IRX(usbd_irx);
 EXTERN_IRX(bdm_irx);
 EXTERN_IRX(mcman_irx);
 EXTERN_IRX(mx4sio_bd_irx);
-EXTERN_IRX(ppctty_irx);
 EXTERN_IRX(usbmass_bd_irx);
 EXTERN_IRX(bdmfs_fatfs_irx);
 EXTERN_IRX(mcserv_irx);
@@ -194,18 +193,10 @@ void SMS_IOPReset ( int afExit ) {
  sbv_patch_disable_prefix_check ();
  sbv_patch_fileio();
 
- //while(!SifIopReset(s_iop_image, 0)){};
 
- //FlushCache(0);
- //FlushCache(2);
+ x = LOADMODULE_BUF ( ppctty_irx, 0, NULL, &i );
+ REPORT_MODULE(PPCTTY, i, x);
 
- //while (!SifIopSync()) {;}
-
- //SifInitRpc ( 0 );
- //_slib_cur_exp_lib_list.tail = NULL;
- //_slib_cur_exp_lib_list.head = NULL;
- //sbv_patch_enable_lmb           ();
- //sbv_patch_disable_prefix_check ();
  RCX_Load  ();
  RCX_Start ();
  RCX_Open  ();
@@ -221,27 +212,22 @@ void SMS_IOPReset ( int afExit ) {
 #else
  afExit = 1;
 #endif  /* NO_DEBUG */
- sbv_patch_disable_prefix_check ();
- sbv_patch_enable_lmb           ();
-
- x = LOADMODULE_BUF ( ppctty_irx, 0, NULL, &i );
- REPORT_MODULE(ppctty, i, x); // UART logging for PowerPC
 
  x = SifExecModuleBuffer ( &g_DataBuffer[ SMS_SMSUTILS_OFFSET ], SMS_SMSUTILS_SIZE, 0, NULL, &i );
- REPORT_MODULE(smsutils, i, x);
+ REPORT_MODULE(SMSUTILS, i, x);
 
  x = LOADMODULE_BUF ( bdm_irx, 0, NULL, &i );
- REPORT_MODULE(bdm, i, x);
+ REPORT_MODULE(BDM;, i, x);
  x = LOADMODULE_BUF ( bdmfs_fatfs_irx, 0, NULL, &i );
- REPORT_MODULE(bdmfs_fatfs, i, x);
+ REPORT_MODULE(BDMFS_FATFS, i, x);
  x = LOADMODULE_BUF ( sio2man_irx, 0, NULL, &i );
- REPORT_MODULE(sio2man, i, x);
+ REPORT_MODULE(SIO2MAN, i, x);
  x = LOADMODULE_BUF ( mcman_irx, 0, NULL, &i );
- REPORT_MODULE(mcman, i, x);
+ REPORT_MODULE(MCMAN, i, x);
  x = LOADMODULE_BUF ( mcserv_irx, 0, NULL, &i );
- REPORT_MODULE(mcserv, i, x);
+ REPORT_MODULE(MCSERV, i, x);
  x = LOADMODULE_BUF ( padman_irx, 0, NULL, &i );
- REPORT_MODULE(padman, i, x);
+ REPORT_MODULE(PADMAN, i, x);
 #ifdef MX4SIO
  x = LOADMODULE_BUF ( mx4sio_bd_irx, 0, NULL, &i );
  REPORT_MODULE(MX4SIO, i, x);
@@ -349,12 +335,12 @@ int SMS_IOPStartUSB ( int afStatus ) {
 
  if ( afStatus ) GUI_Status ( STR_LOCATING_USBD.m_pStr );
   x = LOADMODULE_BUF ( usbd_irx, 0, NULL, &i );
-  REPORT_MODULE(usbd, i, x);
+  REPORT_MODULE(USBD, i, x);
 
  g_IOPFlags |= SMS_IOPF_USB;
 
   x = LOADMODULE_BUF ( usbmass_bd_irx, 0, NULL, &i );
-  REPORT_MODULE(usbmass_bd, i, x);
+  REPORT_MODULE(USBMASS_BD, i, x);
   g_IOPFlags |= SMS_IOPF_UMS;
   //SifExecDecompModuleBuffer ( &g_DataBuffer[ SMS_USB_MASS_OFFSET ], SMS_USB_MASS_SIZE, 0, NULL, &i );
   //
