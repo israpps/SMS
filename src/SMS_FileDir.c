@@ -450,12 +450,16 @@ doScan:
    lFD = fioDopen ( g_CWD );
 
    if ( lFD >= 0 ) {
-
+    DPRINTF("Open FD: %d\n", lFD);
     int lIdx = strlen ( g_CWD ) - 1;
 
-    strcpy ( lPath, g_CWD );
+    DPRINTF("strcpy ( lPath, g_CWD )\n");
+    strcpy( lPath, g_CWD );
 
-    if ( lPath[ lIdx ] != '\\' && lPath[ lIdx ] != '/' ) strcat ( lPath, g_BSlashStr );
+    if ( lPath[ lIdx ] != '\\' && lPath[ lIdx ] != '/' ) {
+      DPRINTF("strcat(lPath, g_BSlashStr)\n");
+      strcat(lPath, g_BSlashStr);
+    } 
 
     lpPtr = lPath + strlen ( lPath );
 
@@ -511,7 +515,7 @@ doScan:
 
     fioDclose ( lFD );
 
-   }  /* end if */
+   } else {DPRINTF("dopen Fail: %d\n", lFD);}  /* end if */
 
   }  /* end else */
 
